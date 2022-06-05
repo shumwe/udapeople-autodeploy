@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs: 
+  slack: circleci/slack@4.10.1
+
 jobs:
     hello:
         docker:
@@ -105,6 +108,10 @@ jobs:
                    # npm install oauth-sign@^0.9.0
                    npm audit fix --audit-level=critical --force
                    npm audit --audit-level=critical
+           - slack/notify:
+               event: fail
+               mentions: '@Devops'
+               template: basic_fail_1
 
 workflows:
   progress:
