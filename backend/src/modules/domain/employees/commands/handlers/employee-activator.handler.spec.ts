@@ -19,7 +19,7 @@ describe('Employee Remover', () => {
       const handler = new EmployeeActivator(employeeRepository);
 
       const params = {
-        employeeId: 100, //changed to 100 to make the test pass
+        employeeId: 100,
         isActive: false,
       };
 
