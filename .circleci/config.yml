@@ -138,7 +138,7 @@ jobs:
         - run:
             name: "Install dependancies"
             command: |
-                sudo apt-get update && sudo apt-get install tar
+                apt-get install sudo && sudo apt-get update && sudo apt-get install tar
         - run:
             name: Ensure back-end infrastructure exists
             command: |
