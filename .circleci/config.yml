@@ -136,6 +136,10 @@ jobs:
         steps:
         - checkout
         - run:
+            name: "Install dependancies"
+            command: |
+                sudo apt-get update && sudo apt-get install tar
+        - run:
             name: Ensure back-end infrastructure exists
             command: |
                 aws cloudformation deploy \
