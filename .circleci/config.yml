@@ -139,7 +139,7 @@ jobs:
             name: "Install dependancies"
             command: |
                 yum install sudo tar gzip curl -y
-                yun update -y
+                yum update -y
         - run:
             name: Ensure back-end infrastructure exists
             command: |
