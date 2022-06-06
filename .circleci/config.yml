@@ -83,7 +83,7 @@ jobs:
         steps:
            - checkout
            - restore_cache:
-               keys: ["frontend-scan"]
+               keys: [frontend-build]
            - run:
                name: "Scan frontend for vulnerabilities"
                command: |
@@ -99,7 +99,7 @@ jobs:
         steps:
            - checkout
            - restore_cache:
-               keys: ["backend-scan"]
+               keys: [backend-build]
            - run:
                name: "Scan the backend for vulnerabilities"
                command: |
