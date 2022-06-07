@@ -181,6 +181,7 @@ jobs:
                 name: Install dependencies
                 command: |
                     apk add tar gzip ansible awscli npm nodejs
+                    pip install awscli
             - run:
                 name: Configure server
                 command: |
