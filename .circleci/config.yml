@@ -170,7 +170,7 @@ jobs:
     
     configure-infrastructure:
         docker:
-            - image: python:3.8.2-alpine
+            - image: python:3.7-alpine3.11
         steps:
             - checkout
             - add_ssh_keys:
@@ -180,7 +180,8 @@ jobs:
             - run:
                 name: Install dependencies
                 command: |
-                    apk add tar gzip ansible awscli npm nodejs
+                    apk add tar gzip ansible nodejs
+                    pip install --upgrade pip
                     pip install awscli
             - run:
                 name: Configure server
