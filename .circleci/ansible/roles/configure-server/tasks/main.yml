@@ -1,0 +1,29 @@
+---  
+  - name: update packeges
+    become: yes
+    apt:
+        update_cache: yes
+
+  - name: Upgrade packages
+    become: yes
+    apt:
+        upgrade: dist
+  
+  - name: python install
+    become: yes
+    apt:
+        name: python3
+  
+  - name: nodejs install
+    become: yes
+    apt:
+        name: ["nodejs", "npm"]
+        state: latest
+        update_cache: yes
+  
+  - name: pm2 install
+    become: yes
+    npm:
+        name: pm2
+        global: yes
+        production: yes
