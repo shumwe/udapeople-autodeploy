@@ -252,7 +252,7 @@ jobs:
                 name: Install dependencies
                 command: |
                     yum install python3 -y
-                    yum install tar curl -y
+                    yum install gzip tar curl -y
                     curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
                     yum install nodejs -y
             - attach_workspace:
@@ -290,7 +290,7 @@ jobs:
             - run:
                 name: Install dependencies
                 command: |
-                    apk add tar gzip ansible nodejs
+                    apk add tar gzip ansible nodejs curl
                     pip install awscli
             - run:
                 name: Deploy backend
