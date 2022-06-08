@@ -224,7 +224,7 @@ jobs:
             - run:
                 name: install dependancies
                 command: |
-                    sudo apt-get curl -y
+                    sudo apt-get install curl -y
             - run:
                 name: Run migrations
                 command: |
@@ -239,6 +239,7 @@ jobs:
                         curl https://kvdb.io/T1o59vrC9j1aCr8oMRDpZP/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
                     fi
             - destroy-environment 
+            - revert-migrations
     
     deploy-frontend:
         docker:
@@ -275,6 +276,27 @@ jobs:
             - destroy-environment
             - revert-migrations
             #TODO: provide this S3 bucket url
+    
+    deploy-backend:
+        docker:
+            - image: python:3.7-alpine3.11
+        steps:
+            - checkout
+            - add_ssh_keys:
+                fingerprints: ["ac:59:30:21:5e:76:9f:1e:27:93:f4:cc:fb:4f:9b:86"]
+            - attach_workspace:
+                at: ~/
+            - run:
+                name: Install dependencies
+                command: |
+                    apk add tar gzip ansible nodejs
+                    pip install awscli
+            - run:
+                name: Deploy backend
+                command: |
+                    # your code here
+            - destroy-environment
+            - revert-migrations
 
 workflows:
   progress:
