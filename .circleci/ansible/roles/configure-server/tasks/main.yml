@@ -10,7 +10,7 @@
         upgrade: dist
   
   - name: remove unwanted dependancies
-    because: yes
+    become: yes
     apt: 
         autoremove: yes
   
