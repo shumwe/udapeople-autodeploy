@@ -224,7 +224,9 @@ jobs:
             - run:
                 name: install dependancies
                 command: |
+                    sudo apt-get update && sudo apt-get upgrade
                     sudo apt-get install curl -y
+                    sudo apt-get install awscli -y
             - run:
                 name: Run migrations
                 command: |
@@ -236,7 +238,7 @@ jobs:
                 command: |
                     if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
                     then 
-                        curl https://kvdb.io/T1o59vrC9j1aCr8oMRDpZP/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+                        curl --insecure https://kvdb.io/T1o59vrC9j1aCr8oMRDpZP/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
                     fi
             - destroy-environment 
             - revert-migrations

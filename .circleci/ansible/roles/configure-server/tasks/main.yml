@@ -1,5 +1,5 @@
 ---  
-  - name: update packeges
+  - name: update packages
     become: yes
     apt:
         update_cache: yes
