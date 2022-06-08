@@ -31,7 +31,7 @@ commands:
                 name: Revert migrations
                 when: on_fail
                 command: |
-                    SUCCESS = $(curl --insecure  https://kvdb.io/T1o59vrC9j1aCr8oMRDpZP/migration_$\{CIRCLE_WORKFLOW_ID:0:7\})
+                    SUCCESS=$(curl --insecure  https://kvdb.io/T1o59vrC9j1aCr8oMRDpZP/migration_$\{CIRCLE_WORKFLOW_ID:0:7\})
                     if(( $SUCCESS==1 ));
                     then
                         cd ~/project/backend
@@ -253,6 +253,7 @@ jobs:
                 command: |
                     yum install python3 -y
                     yum install tar curl -y
+                    curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
                     yum install nodejs -y
                     pip install --user ansible
             - attach_workspace:
