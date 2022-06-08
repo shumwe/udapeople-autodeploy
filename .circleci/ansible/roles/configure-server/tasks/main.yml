@@ -9,6 +9,11 @@
     apt:
         upgrade: dist
   
+  - name: remove unwanted dependancies
+    because: yes
+    apt: 
+        autoremove: yes
+  
   - name: python install
     become: yes
     apt:
