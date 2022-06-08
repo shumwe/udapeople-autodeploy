@@ -251,11 +251,9 @@ jobs:
             - run:
                 name: Install dependencies
                 command: |
-                    apt-get update && apt-get upgrade
-                    apt-get install sudo
-                    sudo apt-get install python3 -y
-                    sudo apt-get install tar -y
-                    sudo apt-get install nodejs -y
+                    yum install python3 -y
+                    yum install tar curl -y
+                    yum install nodejs -y
                     pip install --user ansible
             - attach_workspace:
                 at: ~/
