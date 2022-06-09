@@ -311,21 +311,41 @@ jobs:
     
     smoke-test:
         docker:
-            - image: circleci/node:13.8.0
+            - image: python:3.7-alpine3.11
         steps:
             - checkout
             - run:
                 name: Install dependencies
                 command: |
-                    # your code here
+                    apk add tar gzip ansible nodejs curl
+                    apk add --update npm
+                    pip install awscli
+            - attach_workspace:
+                at: ~/
             - run:
                 name: Get backend url
                 command: |
-                    # your code here
+                    export BACKEND_IP=$(tail -1 .circleci/ansible/inventory.txt)
+                    export API_URL="http://${BACKEND_IP}:3030"
+                    echo "${API_URL}"
+                    if curl "${API_URL}/api/status" | grep "ok"
+                    then
+                        return 0
+                    else
+                        return 1
+                    fi
             - run:
                 name: Backend smoke test.
                 command: |
-                    # your code here
+                     URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"            
+                     echo ${URL} 
+                     if curl -s ${URL} | grep "Welcome"
+                     then
+                        # Change this to 0 after the job fails
+                        return 1
+                     else
+                        return 1
+  fi
             - run:
                 name: Frontend smoke test.
                 command: |

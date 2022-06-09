@@ -3,8 +3,7 @@
   become: true
   copy:
       src: /root/project/artifact.tar.gz
-      dest: /home/ubuntu/
-      recursive: true
+      dest: /home/ubuntu
 
 - name: prepare files
   become: yes
