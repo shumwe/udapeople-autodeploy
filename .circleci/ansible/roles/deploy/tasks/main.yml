@@ -1,21 +1,32 @@
 ---
+- name: create app directory
+  become: true
+  path: /home/ubuntu/udapeople
+  state: directory
+  mode: 777
+  recurse: yes
+
 - name: copy artifact.tar.gz to ec2
   become: true
   copy:
       src: /root/project/artifact.tar.gz
-      dest: /home/ubuntu
+      dest: /home/ubuntu/udapeople
+      owner: ubuntu
+      group: ubuntu
+      mode: 777
 
 - name: prepare files
   become: yes
   shell: |
-      cd /home/ubuntu
+      ls -l ls -l /home/ubuntu/udapeople/artifact.tar.gz
+      cd /home/ubuntu/udapeople
       tar --xvf artifact.tar.gz
       rm artifact.tar.gz
 
 - name: deploy backend server
   become: yes
   shell: |
-      cd /home/ubuntu/backend
+      cd /home/ubuntu/udapeople/backend
       npm install
       pm2 stop default
       pm2 start npm -- start

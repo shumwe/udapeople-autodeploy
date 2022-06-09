@@ -91,7 +91,7 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                keys: [frontend-test]
+                keys: [frontend-build]
             - run:
                 name: "Test Frontend"
                 command: |
@@ -105,7 +105,7 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                keys: [backend-test]
+                keys: [backend-build]
             - run:
                 name: "Test Backend"
                 command: |
@@ -125,7 +125,6 @@ jobs:
                command: |
                    cd frontend
                    npm install
-                   # npm install oauth-sign@^0.9.0
                    npm audit fix --audit-level=critical --force
                    npm audit --audit-level=critical
     
@@ -206,20 +205,7 @@ jobs:
                     pip install awscli
             - run:
                 name: Configure server
-                command: |
-                    echo ENVIRONMENT=$ENVIRONMENT >> "backend/.env"
-                    echo NODE_ENV=production >> "backend/.env"
-                    echo VERSION=1 >> "backend/.env"
-                    echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> "backend/.env"
-                    echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "backend/.env"
-                    echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "backend/.env"
-                    echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> "backend/.env"
-                    echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
-                    echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
-                    echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
-                    echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
-                    echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
-                    
+                command: |                    
                     cd .circleci/ansible
                     ansible-playbook -i inventory.txt configure-server.yml
             - slack/notify:
@@ -305,14 +291,14 @@ jobs:
             - run:
                 name: Install dependencies
                 command: |
-                    apk add tar gzip ansible nodejs curl
+                    apk add tar gzip ansible nodejs curl rsync openssh
                     apk add --update npm
                     pip install awscli
             - run:
                 name: Deploy backend
                 command: |
                     cd backend
-                    npm install
+                    npm i
                     npm run build
                     cd ..
                     tar -C backend -czvf artifact.tar.gz .
@@ -347,7 +333,7 @@ jobs:
                     then
                         return 0
                     else
-                        return 0 # change to 1 later
+                        return 1
                     fi
             - run:
                 name: Frontend smoke test.
@@ -356,13 +342,32 @@ jobs:
                      echo ${URL} 
                      if curl -s ${URL} | grep "Welcome"
                      then
-                        # Change this to 0 after the job fails
                         return 0
                      else
                         return 1
                      fi
             - destroy-environment
-            - revert-migrations 
+            - revert-migrations
+    
+    cloudfront-update:
+        docker:
+            - image: amazon/aws-cli
+        steps:
+            - checkout
+            - run:
+                name: Install dependencies
+                command: |
+                    yum install python3 -y
+                    yum install gzip tar curl -y
+            - run:
+                name: Update cloudfront distribution
+                command: |
+                    aws cloudformation deploy \
+                    --template-file .circleci/files/cloudfront.yml \
+                    --stack-name InitialStack \
+                    --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+                    --tags project=udapeople
+            # Here's where you will add some code to rollback on failure
 
 workflows:
   progress:
