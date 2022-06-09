@@ -1,13 +1,12 @@
 ---
 - name: create app directory
-  become: true
-  path: /home/ubuntu/udapeople
-  state: directory
-  mode: 777
-  recurse: yes
+  become: yes
+  shell: |
+      mkdir /home/ubuntu/udapeople
+      chmod 777 -R /home/ubuntu/udapeople
 
 - name: copy artifact.tar.gz to ec2
-  become: true
+  become: yes
   copy:
       src: /root/project/artifact.tar.gz
       dest: /home/ubuntu/udapeople
