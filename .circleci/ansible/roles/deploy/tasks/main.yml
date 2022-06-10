@@ -1,12 +1,10 @@
 ---
 - name: create app directory
-  become: yes
-  shell: |
-      mkdir /home/ubuntu/udapeople
-      chmod 777 -R /home/ubuntu/udapeople
+  become: true
+  command: mkdir /home/ubuntu/udapeople
 
 - name: copy dist
-  become: yes
+  become: true
   copy:
       src: /root/project/backend/dist
       dest: /home/ubuntu/udapeople
@@ -16,7 +14,7 @@
       mode: 777
 
 - name: "copy node_modules"
-  become: yes
+  become: true
   synchronize:
       src: /root/project/backend/node_modules
       dest: /home/ubuntu/udapeople
@@ -30,7 +28,7 @@
 
 
 - name: deploy backend server
-  become: yes
+  become: true
   shell: |
       cd /home/ubuntu/udapeople/dist
       pm2 start -f ./main.js
