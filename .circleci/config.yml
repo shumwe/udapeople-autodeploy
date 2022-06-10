@@ -205,7 +205,8 @@ jobs:
                     pip install awscli
             - run:
                 name: Configure server
-                command: |                    
+                command: |
+                    pwd               
                     cd .circleci/ansible
                     ansible-playbook -i inventory.txt configure-server.yml
             - slack/notify:
@@ -297,11 +298,6 @@ jobs:
             - run:
                 name: Deploy backend
                 command: |
-                    cd backend
-                    npm i
-                    npm run build
-                    cd ..
-                    tar -C backend -czvf artifact.tar.gz .
                     cd .circleci/ansible
                     echo 'Contents  of the inventory.txt file is -------'
                     cat inventory.txt
