@@ -31,5 +31,4 @@
   become: true
   shell: |
       cd /home/ubuntu/udapeople
-      pm2 start npm --no-automation --name "backend" -- run start
-      
+      pm2 start npm -- start      
