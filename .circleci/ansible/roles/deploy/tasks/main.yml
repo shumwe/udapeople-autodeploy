@@ -6,7 +6,7 @@
 - name: copy dist
   become: true
   copy:
-      src: /root/project/backend/dist
+      src: /../../backend/dist
       dest: /home/ubuntu/udapeople
       owner: ubuntu
       group: ubuntu
@@ -16,7 +16,7 @@
 - name: "copy node_modules"
   become: true
   synchronize:
-      src: /root/project/backend/node_modules
+      src: /../../backend/node_modules
       dest: /home/ubuntu/udapeople
       recursive: true
 
