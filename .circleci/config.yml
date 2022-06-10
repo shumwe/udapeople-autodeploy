@@ -285,8 +285,6 @@ jobs:
             - image: python:3.7-alpine3.11
         steps:
             - checkout
-            - restore_cache:
-                keys: [backend-build]
             - add_ssh_keys:
                 fingerprints: ["ac:59:30:21:5e:76:9f:1e:27:93:f4:cc:fb:4f:9b:86"]
             - attach_workspace:
@@ -300,6 +298,11 @@ jobs:
             - run:
                 name: Deploy backend
                 command: |
+                    cd backend
+                    npm i
+                    npm run build
+                    cd ..
+                    tar -C backend -czvf artifact.tar.gz .
                     cd .circleci/ansible
                     echo 'Contents  of the inventory.txt file is -------'
                     cat inventory.txt
