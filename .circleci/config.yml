@@ -158,13 +158,13 @@ jobs:
             - image: amazon/aws-cli
         steps:
         - checkout
-        - attach_workspace:
-                at: ~/
         - run:
             name: "Install dependancies"
             command: |
                 yum install tar gzip -y
                 yum update -y
+        - attach_workspace:
+                at: ~/
         - run:
             name: Ensure back-end infrastructure exists
             command: |
@@ -199,8 +199,6 @@ jobs:
             - image: python:3.7-alpine3.11
         steps:
             - checkout
-            - attach_workspace:
-                at: ~/
             - add_ssh_keys:
                 fingerprints: ["ac:59:30:21:5e:76:9f:1e:27:93:f4:cc:fb:4f:9b:86"]
             - run:
@@ -209,6 +207,8 @@ jobs:
                     apk add tar gzip ansible nodejs
                     pip install --upgrade pip
                     pip install awscli
+            - attach_workspace:
+                at: ~/
             - run:
                 name: Configure server
                 command: |
@@ -226,16 +226,16 @@ jobs:
             - image: circleci/node:13.8.0
         steps:
             - checkout
-            - attach_workspace:
-                at: ~/
             - restore_cache:
                 keys: [backend-build]
             - run:
                 name: install dependancies
                 command: |
                     sudo apt-get update && sudo apt-get upgrade
-                    sudo apt-get install curl -y
+                    sudo apt-get install curl tar -y
                     sudo apt-get install awscli -y
+            - attach_workspace:
+                at: ~/
             - run:
                 name: Run migrations
                 command: |
@@ -258,8 +258,6 @@ jobs:
             - image: amazon/aws-cli
         steps:
             - checkout
-            - attach_workspace:
-                at: ~/
             - run:
                 name: Install dependencies
                 command: |
@@ -295,8 +293,6 @@ jobs:
             - image: python:3.7-alpine3.11
         steps:
             - checkout
-            - attach_workspace:
-                at: ~/
             - add_ssh_keys:
                 fingerprints: ["ac:59:30:21:5e:76:9f:1e:27:93:f4:cc:fb:4f:9b:86"]
             - run:
@@ -305,6 +301,8 @@ jobs:
                     apk add tar gzip ansible nodejs curl rsync openssh
                     apk add --update npm
                     pip install awscli
+            - attach_workspace:
+                at: ~/
             - run:
                 name: Deploy backend
                 command: |
@@ -327,14 +325,14 @@ jobs:
             - image: python:3.7-alpine3.11
         steps:
             - checkout
-            - attach_workspace:
-                at: ~/
             - run:
                 name: Install dependencies
                 command: |
                     apk add tar gzip ansible nodejs curl
                     apk add --update npm
                     pip install awscli
+            - attach_workspace:
+                at: ~/
             - run:
                 name: Backend smoke test.
                 command: |
@@ -367,13 +365,13 @@ jobs:
             - image: amazon/aws-cli
         steps:
             - checkout
-            - attach_workspace:
-                at: ~/
             - run:
                 name: Install dependencies
                 command: |
                     yum install python3 -y
                     yum install gzip tar curl -y
+            - attach_workspace:
+                at: ~/
             - run:
                 name: Update cloudfront distribution
                 command: |
@@ -390,13 +388,13 @@ jobs:
             - image: amazon/aws-cli
         steps:
             - checkout
-            - attach_workspace:
-                at: ~/
             - run:
                 name: Install dependencies
                 command: |
                     yum install python3 -y
                     yum install gzip tar curl -y
+            - attach_workspace:
+                at: ~/
             - run:
                 name: Get old stack workflow id
                 command: |
@@ -427,8 +425,10 @@ workflows:
   progress:
       jobs:
           - hello
-          - build-frontend
-          - build-backend
+          - build-frontend:
+              requires: [hello]
+          - build-backend:
+              requires: [hello]
           - test-frontend:
               requires: [build-frontend]
           - test-backend:
