@@ -118,6 +118,8 @@ jobs:
             - image: circleci/node:13.8.0
         steps:
            - checkout
+           - attach_workspace:
+                at: ~/
            - restore_cache:
                keys: [frontend-build]
            - run:
@@ -133,6 +135,8 @@ jobs:
             - image: circleci/node:13.8.0
         steps:
            - checkout
+           - attach_workspace:
+                at: ~/
            - restore_cache:
                keys: [backend-build]
            - run:
@@ -154,6 +158,8 @@ jobs:
             - image: amazon/aws-cli
         steps:
         - checkout
+        - attach_workspace:
+                at: ~/
         - run:
             name: "Install dependancies"
             command: |
@@ -193,10 +199,10 @@ jobs:
             - image: python:3.7-alpine3.11
         steps:
             - checkout
-            - add_ssh_keys:
-                fingerprints: ["ac:59:30:21:5e:76:9f:1e:27:93:f4:cc:fb:4f:9b:86"]
             - attach_workspace:
                 at: ~/
+            - add_ssh_keys:
+                fingerprints: ["ac:59:30:21:5e:76:9f:1e:27:93:f4:cc:fb:4f:9b:86"]
             - run:
                 name: Install dependencies
                 command: |
@@ -220,6 +226,8 @@ jobs:
             - image: circleci/node:13.8.0
         steps:
             - checkout
+            - attach_workspace:
+                at: ~/
             - restore_cache:
                 keys: [backend-build]
             - run:
@@ -250,6 +258,8 @@ jobs:
             - image: amazon/aws-cli
         steps:
             - checkout
+            - attach_workspace:
+                at: ~/
             - run:
                 name: Install dependencies
                 command: |
@@ -285,10 +295,10 @@ jobs:
             - image: python:3.7-alpine3.11
         steps:
             - checkout
-            - add_ssh_keys:
-                fingerprints: ["ac:59:30:21:5e:76:9f:1e:27:93:f4:cc:fb:4f:9b:86"]
             - attach_workspace:
                 at: ~/
+            - add_ssh_keys:
+                fingerprints: ["ac:59:30:21:5e:76:9f:1e:27:93:f4:cc:fb:4f:9b:86"]
             - run:
                 name: Install dependencies
                 command: |
@@ -317,14 +327,14 @@ jobs:
             - image: python:3.7-alpine3.11
         steps:
             - checkout
+            - attach_workspace:
+                at: ~/
             - run:
                 name: Install dependencies
                 command: |
                     apk add tar gzip ansible nodejs curl
                     apk add --update npm
                     pip install awscli
-            - attach_workspace:
-                at: ~/
             - run:
                 name: Backend smoke test.
                 command: |
@@ -357,6 +367,8 @@ jobs:
             - image: amazon/aws-cli
         steps:
             - checkout
+            - attach_workspace:
+                at: ~/
             - run:
                 name: Install dependencies
                 command: |
@@ -373,6 +385,43 @@ jobs:
             - destroy-environment
             - revert-migrations
 
+    cleanup:
+        docker:
+            - image: amazon/aws-cli
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ~/
+            - run:
+                name: Install dependencies
+                command: |
+                    yum install python3 -y
+                    yum install gzip tar curl -y
+            - run:
+                name: Get old stack workflow id
+                command: |
+                    echo "###### Fetch the Old workflow ID ######"
+                    export OldWorkflowID=$(aws cloudformation \
+                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                    --no-paginate --output text)
+                    echo OldWorkflowID: "${OldWorkflowID}"
+                    echo "###### Fetch the current workflow ID ######"
+                    echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+                    echo "###### Fetch the stack names ######"
+                    export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+                    --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+                    echo Stack names: "${STACKS[@]}"
+            - run:
+                name: Remove old stacks and files
+                command: |
+                    if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+                    then
+                        echo "#### Nothing to be deleted here ####"
+                    else:
+                        aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+                        aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+                        aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+                    fi
 
 workflows:
   progress:
@@ -402,3 +451,5 @@ workflows:
               requires: [deploy-backend, deploy-frontend]
           - cloudfront-update:
               requires: [smoke-test]
+          - cleanup:
+              requires: [cloudfront-update]
