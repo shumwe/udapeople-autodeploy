@@ -1,5 +1,5 @@
 aws cloudformation deploy \
 --template-file cloudfront.yml \
---stack-name InitialStack \
---parameter-overrides WorkflowID=udapeople-hfdiernfsdkoid \
+--stack-name UdapeopleInitialStack \
+--parameter-overrides WorkflowID=udapeople-hfdiernfsd \
 --profile ci-cd
