@@ -30,8 +30,8 @@
 - name: deploy backend server
   become: true
   shell: |
-      cd /home/ubuntu/udapeople
-      pm2 start -f ./main.js
+      cd /home/ubuntu/udapeople/dist
+      pm2 start -f ./main.js -n udapeople
   environment:
       ENVIRONMENT: production
       TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
@@ -42,3 +42,9 @@
       TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
       TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
       TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"
+  ignore_errors: true
+
+- name: save list of Processes
+  shell: |
+      pm2 save
+  ignore_errors: true
