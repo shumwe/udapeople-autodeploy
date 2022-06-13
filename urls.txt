@@ -1,6 +1,6 @@
 
 URL01 (Github Url): https://github.com/shumwe/udapeople-autodeploy  
 
-URL02 (Green s3 bucket url): http://udapeople-cc70f17.s3-website-us-east-1.amazonaws.com
+URL02 (Green s3 bucket url): http://udapeople-c61e101.s3-website-us-east-1.amazonaws.com
 
-Cloudfront Domain name: d1zt4sjpwj0j3w.cloudfront.net
+Cloudfront Domain name: djvulngolm07b.cloudfront.net

@@ -24,11 +24,21 @@
 - name: "stop already running instances"
   become: true
   shell: |
-      pm2 stop default
+      pm2 delete all
   ignore_errors: true
 
 - name: deploy backend server
   become: true
   shell: |
       cd /home/ubuntu/udapeople
-      pm2 start npm -- start      
+      pm2 start -f ./main.js
+  environment:
+      ENVIRONMENT: production
+      TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
+      TYPEORM_MIGRATIONS_DIR: "./migrations"
+      TYPEORM_MIGRATIONS: "./migrations/*.js"
+      TYPEORM_ENTITIES: "./modules/domain/**/*.entity.js"
+      TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST') }}"
+      TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
+      TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
+      TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"

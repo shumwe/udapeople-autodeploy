@@ -25,6 +25,13 @@
         name: ["nodejs", "npm"]
         state: latest
         update_cache: yes
+  
+  - name: typescript and node-sass install
+    become: true
+    shell: |
+        cd ~/
+        npm install -g typescript node-sass
+    ignore_errors: true
         
   - name: pm2 install
     become: true
@@ -32,3 +39,55 @@
         name: pm2
         global: yes
         production: yes
+  
+  - name: pm2 startup script
+    shell: |
+        pm2 startup
+        sudo env PATH=$PATH:/usr/bin /usr/local/lib/node_modules/pm2/bin/pm2 startup systemd -u ubuntu --hp /home/ubuntu
+  
+  - name: get nvm
+    become: true
+    become_method: sudo
+    become_flags: -i
+    become_user: ubuntu
+    block:
+    - name: Install nvm
+      shell: | 
+        sudo apt install curl 
+        curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash 
+      args:
+        executable: /bin/bash
+        chdir: "$HOME"
+        creates: "$HOME/.nvm/nvm.sh"
+        warn: false
+
+  - name: "Reload bashrc"
+    become: true
+    shell: |
+        cd ~/
+        . ~/.bashrc
+        . ~/.profile
+        . ~/.nvm/nvm.sh
+        bash --login
+  
+  - name: set .profile
+    ansible.builtin.lineinfile:
+        path: ~/.profile
+        line: source ~/.nvm/nvm.sh
+        create: yes
+  
+  - name: "loggly for system logs"
+    become: true
+    shell: |
+        curl -O https://www.loggly.com/install/configure-linux.sh
+    args:
+        warn: false
+
+  - name: "setup directory for udapeople"
+    become: true
+    file:
+        path: "/opt/udapeople"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: 0777
