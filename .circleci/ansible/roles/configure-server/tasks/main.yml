@@ -25,30 +25,10 @@
         name: ["nodejs", "npm"]
         state: latest
         update_cache: yes
-
-  - name: install typscript
-    become: true
-    npm:
-        name: typescript
-        global: yes
-  
-  - name: install node-sass
-    become: true
-    npm:
-        name: node-sass
-    ignore_errors: true
-  
+        
   - name: pm2 install
     become: true
     npm:
         name: pm2
         global: yes
         production: yes
-  
-  - name: pm2 startup
-    become: true
-    shell: |
-        cd ~/ && pm2 startup
-        sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd \
-        -u ubuntu --hp /home/ubuntu
-        
